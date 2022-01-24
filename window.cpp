@@ -213,7 +213,7 @@ INT_PTR CALLBACK dialogProc(HWND h, UINT m, WPARAM w, LPARAM l)
     return 0;
 }
 
-}
+
 
 void createWindow()
 {
