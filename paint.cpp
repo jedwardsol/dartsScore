@@ -24,7 +24,7 @@ void paintBoard(Gdiplus::Graphics   &window, BoardDimensions const &board)
 {
     static Gdiplus::Pen         blackPen  {Gdiplus::Color::Black};
 
-    static Gdiplus::SolidBrush  blackBrush{Gdiplus::Color::Black};
+    static Gdiplus::SolidBrush  blackBrush{Gdiplus::Color::DarkGray};
     static Gdiplus::SolidBrush  whiteBrush{Gdiplus::Color::White};
     static Gdiplus::SolidBrush  greenBrush{Gdiplus::Color::DarkGreen};
     static Gdiplus::SolidBrush  redBrush  {Gdiplus::Color::DarkRed};
@@ -78,23 +78,32 @@ void paintBoard(Gdiplus::Graphics   &window, BoardDimensions const &board)
 }
 
 
-void paintAim(Gdiplus::Graphics   &window,BoardDimensions const &board)
+void paintAimAndDarts(Gdiplus::Graphics   &window,BoardDimensions const &board)
 {
-    static Gdiplus::Pen         redPen  {Gdiplus::Color::Red};
+    static Gdiplus::Pen         whitePen    {Gdiplus::Color::White};
+    static Gdiplus::Pen         redPen      {Gdiplus::Color::Red};
+    static Gdiplus::Pen         greenPen    {Gdiplus::Color::Green};
 
     auto radius = static_cast<int>(board.radius.outerTriple * (accuracy / 100.0));
 
+    for(auto const &dart : Darts::darts)
+    {
+        auto x = static_cast<int>(mousePosition.x + radius * dart.X);
+        auto y = static_cast<int>(mousePosition.y + radius * dart.Y);
 
-    window.DrawEllipse(&redPen, mousePosition.x-1,      mousePosition.y-1, 2,2);
-    window.DrawEllipse(&redPen, mousePosition.x-radius, mousePosition.y-radius, radius*2,radius*2);
+        window.DrawEllipse(&whitePen, x, y, 1,1);
+        window.DrawEllipse(&greenPen, x-1, y-1, 2,2);
+    }
 
 
+    window.DrawEllipse(&whitePen, mousePosition.x-1,      mousePosition.y-1, 2,2);
+    window.DrawEllipse(&redPen,   mousePosition.x-2,      mousePosition.y-2, 4,4);
+    window.DrawEllipse(&redPen,   mousePosition.x-radius, mousePosition.y-radius, radius*2,radius*2);
 }
 
 
 void paint(HWND h,WPARAM w, LPARAM l)
 {
-
     auto board{ ::boardDimensions(h) };
 
     PAINTSTRUCT paint;
@@ -111,8 +120,8 @@ void paint(HWND h,WPARAM w, LPARAM l)
 
 
     window.Clear(Gdiplus::Color::White);
-    paintBoard(window,board);
-    paintAim  (window,board);
+    paintBoard      (window,board);
+    paintAimAndDarts(window,board);
     
 
 

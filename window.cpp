@@ -29,18 +29,8 @@ POINT               mousePosition{};
 int                 accuracy{};             
 
 
-
-
-
-void mouseMove(HWND h, int x, int y)
+void mouseMoveAim(BoardDimensions const &board,int x, int y)     // board coordinates
 {
-    mousePosition = {x,y};
-
-    auto board { boardDimensions(h)};
-
-    x-=board.center.X;
-    y-=board.center.Y;
-
     auto [score, multiplier] = scoreFromPoint(board,x,y);
 
     std::string totalScore;
@@ -64,6 +54,47 @@ void mouseMove(HWND h, int x, int y)
     }
 
     SetDlgItemText(theDialog, IDC_AIMING_AT, totalScore.c_str());
+}
+
+
+
+void mouseMoveDarts(BoardDimensions const &board,int x, int y)     // board coordinates
+{
+    double totalScore{};
+
+    auto radius = static_cast<int>(board.radius.outerTriple * (accuracy / 100.0));
+
+    for(auto const &dart : Darts::darts)
+    {
+        auto dx = static_cast<int>(x + radius * dart.X);
+        auto dy = static_cast<int>(y + radius * dart.Y);
+
+        auto [score, multiplier] = scoreFromPoint(board,dx,dy);
+
+        totalScore+=score*multiplier;
+    }
+
+    auto  expectedScore = totalScore / Darts::numDarts;
+
+    auto text = std::format("{:2.1f}",expectedScore);
+
+    SetDlgItemText(theDialog, IDC_EXPECTED_SCORE, text.c_str());
+}
+
+
+
+void mouseMove(HWND h, int x, int y)
+{
+    mousePosition = {x,y};
+
+    auto board { boardDimensions(h)};
+
+    x-=board.center.X;
+    y-=board.center.Y;
+
+    mouseMoveAim(board,x,y);
+    mouseMoveDarts(board,x,y);
+
 }
 
 
@@ -95,8 +126,10 @@ LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
 
         mouseMove(h, GET_X_LPARAM(l), GET_Y_LPARAM(l));
         PostMessage(theWindow,WM_REFRESH,0,0);
+        break;
 
-        return DefWindowProc(h,m,w,l);
+
+
 
     case WM_NCHITTEST:
     case WM_NCMOUSEMOVE:
@@ -104,7 +137,7 @@ LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
         break;
 
     default:
-        //print("msg {:#x}\n",m);
+        print("msg {:#x}\n",m);
         break;
     }
 
@@ -148,7 +181,7 @@ INT_PTR CALLBACK dialogProc(HWND h, UINT m, WPARAM w, LPARAM l)
 
 
     default:
-//        print("msg {:#x}\n",m);
+   //     print("msg {:#x}\n",m);
         break;
     }
 

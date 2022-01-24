@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "dimensions.h"
 
 void createWindow();
@@ -14,10 +15,11 @@ struct DartHit
     int multiplier;
 };
 
-DartHit scoreFromPoint(BoardDimensions const &board, int x,int y);
+DartHit scoreFromPoint(BoardDimensions const &board, int x,int y);     // board coordinates
 
 
 
 
-extern POINT               mousePosition;   // window coordinates
-extern int                 accuracy;        // 2=high, 102 =low        
+extern POINT                        mousePosition;   // client coordinates
+extern int                          accuracy;        // 2=high, 102 =low        
+

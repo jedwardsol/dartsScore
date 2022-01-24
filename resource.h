@@ -10,6 +10,8 @@
 #define IDC_HSL                         1004
 #define IDC_HSV                         1005
 #define IDC_AIMING_AT                   1005
+#define IDC_AIMING_AT2                  1006
+#define IDC_EXPECTED_SCORE              1006
 
 // Next default values for new objects
 // 

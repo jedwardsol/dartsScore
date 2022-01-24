@@ -1,12 +1,35 @@
 
 #include <cmath>
 #include <numbers>
+#include <random>
 
 #include "print.h"
 #include "dimensions.h"
 #include "window.h"
 
 
+auto genDarts()
+{
+    static std::mt19937                                     rng{ std::random_device{}()};
+    static std::uniform_real_distribution<Gdiplus::REAL>    square{-1.0,1.0};
+
+    std::array<Gdiplus::PointF, Darts::numDarts>    darts{};
+
+    for(auto &dart : darts)
+    {
+        do
+        {
+            dart = { square(rng),square(rng)};
+        } while( std::hypot(dart.X, dart.Y) > 1);
+    }
+
+    return darts;
+}
+
+
+
+
+std::array<Gdiplus::PointF, Darts::numDarts> Darts::darts{genDarts()};           // -1.0 -> 1.0
 
 
 DartHit scoreFromPoint(BoardDimensions const &board, int x,int y)
