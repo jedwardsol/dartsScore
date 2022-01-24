@@ -43,9 +43,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dimensions.cpp" />
+    <ClCompile Include="paint.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dimensions.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>

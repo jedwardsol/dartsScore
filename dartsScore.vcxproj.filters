@@ -18,12 +18,21 @@
     <ClCompile Include="window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="paint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dimensions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="window.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dimensions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
