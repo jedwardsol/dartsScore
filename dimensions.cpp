@@ -53,7 +53,7 @@ BoardDimensions boardDimensions(HWND h)
 
 
 
-RadiusDimensions radiusDimensions(BoardDimensions  &board, int sectorNumber)
+RadiusDimensions radiusDimensions(BoardDimensions  const &board, int sectorNumber)
 {
     Gdiplus::REAL angle = 1.0f * Board::sector0Start + sectorNumber*Board::sectorWidth;
 
@@ -77,4 +77,22 @@ RadiusDimensions radiusDimensions(BoardDimensions  &board, int sectorNumber)
     };
 
     return dimensions;
+}
+
+
+
+Gdiplus::PointF sectorTextLocation(BoardDimensions  const &board, int sectorNumber)
+{
+    auto angle = sectorNumber*Board::sectorWidth;
+
+    auto makePoint = [&](int radius)
+    {
+        return Gdiplus::PointF 
+        {
+            board.center.X + static_cast<Gdiplus::REAL>(radius * std::cos(radians(angle))),
+            board.center.Y + static_cast<Gdiplus::REAL>(radius * std::sin(radians(angle)))
+        };
+    };
+
+    return makePoint(board.radius.outerDouble+30);
 }

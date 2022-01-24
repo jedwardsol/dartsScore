@@ -15,7 +15,6 @@
 #include "window.h"
 #include "resource.h"
 
-
 #include "dimensions.h"
 
 
@@ -26,76 +25,17 @@ HWND                theDialog   {};
 constexpr int       WM_REFRESH  {WM_APP};
 constexpr auto      windowStyle { WS_OVERLAPPEDWINDOW | WS_VISIBLE    };
 
+POINT               mousePosition{};
+int                 accuracy{};             
 
 
 
 
-
-
-
-
-
-
-
-
-
-auto scoreFromPoint(BoardDimensions const &board, int x,int y)
-{
-    struct 
-    {
-        int score;
-        int multiplier;
-    } result{0,1};
-
-    auto distance = std::hypot( x, y);
-
-    if(distance > board.radius.outerDouble)
-    {
-    }
-    else if(distance < board.radius.innerBullseye)
-    {
-        result.score=50;
-    }
-    else if(distance < board.radius.outerBullseye)
-    {
-        result.score=25;
-    }
-    else
-    {
-        if(   distance < board.radius.outerTriple
-           && distance > board.radius.innerTriple)
-        {
-            result.multiplier=3;
-        }
-        else if(   distance < board.radius.outerDouble
-                && distance > board.radius.innerDouble)
-        {
-            result.multiplier=2;
-        }
-
-        result.score=2;
-
-        auto angle    = static_cast<int>(degrees(std::atan2( y , x)));
-
-        if(angle < 0)
-        {
-            angle = 360 + angle;
-        }
-
-        auto sector = (angle - Board::sector0Start) / Board::sectorWidth;
-
-        sector = (sector+20) % 20;
-
-
-        result.score = Board::sectorScore[sector];
-    }
-
-
-    return result;
-}
 
 void mouseMove(HWND h, int x, int y)
 {
+    mousePosition = {x,y};
+
     auto board { boardDimensions(h)};
 
     x-=board.center.X;
@@ -122,8 +62,6 @@ void mouseMove(HWND h, int x, int y)
 
         totalScore += std::to_string(score);
     }
-
-
 
     SetDlgItemText(theDialog, IDC_AIMING_AT, totalScore.c_str());
 }
@@ -156,6 +94,7 @@ LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
     case WM_MOUSEMOVE:
 
         mouseMove(h, GET_X_LPARAM(l), GET_Y_LPARAM(l));
+        PostMessage(theWindow,WM_REFRESH,0,0);
 
         return DefWindowProc(h,m,w,l);
 
@@ -201,6 +140,9 @@ INT_PTR CALLBACK dialogProc(HWND h, UINT m, WPARAM w, LPARAM l)
 
     case WM_HSCROLL:
     {
+        accuracy= 2 + static_cast<int>(SendDlgItemMessage(h,IDC_SATURATION,TBM_GETPOS,0,0));
+
+        PostMessage(theWindow,WM_REFRESH,0,0);
         break;        
     }
 

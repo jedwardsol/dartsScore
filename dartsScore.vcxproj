@@ -43,6 +43,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dart.cpp" />
     <ClCompile Include="dimensions.cpp" />
     <ClCompile Include="paint.cpp" />
     <ClCompile Include="window.cpp" />

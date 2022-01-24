@@ -20,32 +20,7 @@
 
 
 
-
-
-
-
-
-
-
-auto sectorText(BoardDimensions  &board, int sectorNumber)
-{
-    auto angle = sectorNumber*Board::sectorWidth;
-
-    auto makePoint = [&](int radius)
-    {
-        return Gdiplus::PointF 
-        {
-            board.center.X + static_cast<Gdiplus::REAL>(radius * std::cos(radians(angle))),
-            board.center.Y + static_cast<Gdiplus::REAL>(radius * std::sin(radians(angle)))
-        };
-    };
-
-    return makePoint(board.radius.outerDouble+30);
-}
-
-
-
-void paint(HWND h,WPARAM w, LPARAM l)
+void paintBoard(Gdiplus::Graphics   &window, BoardDimensions const &board)
 {
     static Gdiplus::Pen         blackPen  {Gdiplus::Color::Black};
 
@@ -57,15 +32,6 @@ void paint(HWND h,WPARAM w, LPARAM l)
     static Gdiplus::FontFamily  family    {L"Times New Roman"};
     static Gdiplus::Font        font      {&family, 32, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel};
 
-
-    auto board{ ::boardDimensions(h) };
-
-    PAINTSTRUCT paint;
-    BeginPaint(h,&paint);
-
-    Gdiplus::Graphics   window{paint.hdc};    
-
-    window.SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
 
 
     for(int i=0;i<20;i++)
@@ -95,7 +61,7 @@ void paint(HWND h,WPARAM w, LPARAM l)
         window.FillPath((i % 2) ? &redBrush   : &greenBrush, &tripleArc);
 
         auto const number      {std::to_wstring(Board::sectorScore[i])};
-        auto const sectorText  { ::sectorText(board,i)};
+        auto const sectorText  { ::sectorTextLocation(board,i)};
 
         Gdiplus::RectF  textRect{};
         window.MeasureString (number.c_str(), -1, &font, sectorText, &textRect);
@@ -109,6 +75,51 @@ void paint(HWND h,WPARAM w, LPARAM l)
 
     window.FillEllipse(&greenBrush,board.rect.outerBullseye);
     window.FillEllipse(&redBrush,  board.rect.innerBullseye);
+}
+
+
+void paintAim(Gdiplus::Graphics   &window,BoardDimensions const &board)
+{
+    static Gdiplus::Pen         redPen  {Gdiplus::Color::Red};
+
+    auto radius = static_cast<int>(board.radius.outerTriple * (accuracy / 100.0));
+
+
+    window.DrawEllipse(&redPen, mousePosition.x-1,      mousePosition.y-1, 2,2);
+    window.DrawEllipse(&redPen, mousePosition.x-radius, mousePosition.y-radius, radius*2,radius*2);
+
+
+}
+
+
+void paint(HWND h,WPARAM w, LPARAM l)
+{
+
+    auto board{ ::boardDimensions(h) };
+
+    PAINTSTRUCT paint;
+    BeginPaint(h,&paint);
+
+    RECT        client{};
+    GetClientRect(h,&client);
+
+
+    Gdiplus::Bitmap     bmp{client.right-client.left, client.bottom-client.top};
+    Gdiplus::Graphics   window{&bmp};    
+
+    window.SetSmoothingMode(Gdiplus::SmoothingMode::SmoothingModeAntiAlias);
+
+
+    window.Clear(Gdiplus::Color::White);
+    paintBoard(window,board);
+    paintAim  (window,board);
+    
+
+
+
+    Gdiplus::Graphics screen(paint.hdc);
+    screen.DrawImage(&bmp, 0, 0);
+
 
     EndPaint(h,&paint);
 }

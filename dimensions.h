@@ -110,6 +110,6 @@ struct RadiusDimensions // pixels
 };
 
 
-RadiusDimensions radiusDimensions(BoardDimensions  &board, int sectorNumber);
+RadiusDimensions radiusDimensions(BoardDimensions const &board, int sectorNumber);
 
-
+Gdiplus::PointF sectorTextLocation(BoardDimensions const &board, int sectorNumber);
