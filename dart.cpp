@@ -8,7 +8,7 @@
 #include "window.h"
 
 
-auto genDarts()
+auto genDartsSquare()
 {
     static std::mt19937                                     rng{ std::random_device{}()};
     static std::uniform_real_distribution<Gdiplus::REAL>    square{-1.0,1.0};
@@ -27,9 +27,57 @@ auto genDarts()
 }
 
 
+auto genDartsCircle()
+{
+    static std::mt19937                                     rng{ std::random_device{}()};
+    static std::uniform_real_distribution<Gdiplus::REAL>    radius{0.0,1.0};
+    static std::uniform_int                                 angle{0, 360};
 
 
-std::array<Gdiplus::PointF, Darts::numDarts> Darts::darts{genDarts()};           // -1.0 -> 1.0
+    std::array<Gdiplus::PointF, Darts::numDarts>    darts{};
+
+    for(auto &dart : darts)
+    {
+        auto r = radius(rng);
+        auto a = radians(angle(rng));
+
+        dart= {static_cast<Gdiplus::REAL>(r*cos(a)), 
+               static_cast<Gdiplus::REAL>(r*sin(a))};
+
+    }
+
+    return darts;
+}
+
+
+
+auto genDartsLowerCircle()
+{
+    static std::mt19937                                     rng{ std::random_device{}()};
+    static std::uniform_real_distribution<Gdiplus::REAL>    radius{0.0,1.0};
+    static std::uniform_int                                 angle{-45, 180+45};
+
+
+    std::array<Gdiplus::PointF, Darts::numDarts>    darts{};
+
+    for(auto &dart : darts)
+    {
+        auto r = radius(rng);
+        auto a = radians(angle(rng));
+
+        dart= {static_cast<Gdiplus::REAL>(r*cos(a)), 
+               static_cast<Gdiplus::REAL>(r*sin(a))};
+
+    }
+
+    return darts;
+}
+
+
+
+
+
+std::array<Gdiplus::PointF, Darts::numDarts> Darts::darts{genDartsLowerCircle()};           // -1.0 -> 1.0
 
 
 DartHit scoreFromPoint(BoardDimensions const &board, int x,int y)
