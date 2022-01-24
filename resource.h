@@ -9,6 +9,7 @@
 #define IDC_RADIO1                      1004
 #define IDC_HSL                         1004
 #define IDC_HSV                         1005
+#define IDC_AIMING_AT                   1005
 
 // Next default values for new objects
 // 
@@ -16,7 +17,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

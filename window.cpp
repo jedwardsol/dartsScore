@@ -1,4 +1,5 @@
-﻿#include <Windows.h>
+﻿#include <windows.h>
+#include <windowsx.h>
 #include <commctrl.h>
 #include <gdiplus.h>
 
@@ -8,6 +9,7 @@
 #include <cmath>
 #include <system_error>
 #include <numbers>
+#include <tuple>
 
 #include "print.h"
 #include "window.h"
@@ -70,6 +72,13 @@ auto    radians(double degrees)
 }
 
 
+auto    degrees(double radians)
+{
+    return 360 * radians / (2 * std::numbers::pi );
+}
+
+
+
 struct BoardDimensions  // pixels
 {
     Gdiplus::Point  center;
@@ -106,7 +115,7 @@ auto boardDimensions(HWND h)
 
     auto const clientWidth{client.right-client.left};
     auto const clientHeight{client.bottom-client.top};
-    auto const boardRadius   = clientWidth/2 - 50;
+    auto const boardRadius   = min(clientWidth,clientHeight) /2 - 50;
 
 
     auto makeRect = [&](int radius)
@@ -114,7 +123,7 @@ auto boardDimensions(HWND h)
         return Gdiplus::Rect
         {
             clientWidth/2 - radius,
-            clientWidth/2 - radius,
+            clientHeight/2 - radius,
             radius*2,
             radius*2,
         };
@@ -124,7 +133,7 @@ auto boardDimensions(HWND h)
 
     BoardDimensions dimensions
     {
-        {clientWidth/2,clientWidth/2},
+        {clientWidth/2,clientHeight/2},
     
         {
            boardRadius,
@@ -151,7 +160,7 @@ auto boardDimensions(HWND h)
 
 struct RadiusDimensions // pixels
 {
-    int             angle;
+    Gdiplus::REAL   angle;
 
     Gdiplus::Point  outerDouble;   
     Gdiplus::Point  innerDouble;
@@ -164,7 +173,7 @@ struct RadiusDimensions // pixels
 
 auto radiusDimensions(BoardDimensions  &board, int sectorNumber)
 {
-    auto angle = Board::sector0Start + sectorNumber*Board::sectorWidth;
+    Gdiplus::REAL angle = 1.0f * Board::sector0Start + sectorNumber*Board::sectorWidth;
 
     auto makePoint = [&](int radius)
     {
@@ -203,7 +212,6 @@ auto sectorText(BoardDimensions  &board, int sectorNumber)
     };
 
     return makePoint(board.radius.outerDouble+30);
-
 }
 
 
@@ -219,7 +227,7 @@ void paint(HWND h,WPARAM w, LPARAM l)
     static Gdiplus::SolidBrush  redBrush  {Gdiplus::Color::DarkRed};
 
     static Gdiplus::FontFamily  family    {L"Times New Roman"};
-    static Gdiplus::Font        font      {&family, 24, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel};
+    static Gdiplus::Font        font      {&family, 32, Gdiplus::FontStyleRegular, Gdiplus::UnitPixel};
 
 
     auto board{ ::boardDimensions(h) };
@@ -236,7 +244,6 @@ void paint(HWND h,WPARAM w, LPARAM l)
     {
         auto  sectorStart { ::radiusDimensions(board,i)};
         auto  sectorEnd   { ::radiusDimensions(board,i+1)};
-        auto  sectorText  { ::sectorText(board,i)};
 
         Gdiplus::GraphicsPath   sector;
         Gdiplus::GraphicsPath   doubleArc;
@@ -259,14 +266,115 @@ void paint(HWND h,WPARAM w, LPARAM l)
         window.FillPath((i % 2) ? &redBrush   : &greenBrush, &doubleArc);
         window.FillPath((i % 2) ? &redBrush   : &greenBrush, &tripleArc);
 
-        window.DrawString(std::to_wstring(Board::sectorScore[i]).c_str(),-1,&font,sectorText,&blackBrush);
+        auto const number      {std::to_wstring(Board::sectorScore[i])};
+        auto const sectorText  { ::sectorText(board,i)};
 
+        Gdiplus::RectF  textRect{};
+        window.MeasureString (number.c_str(), -1, &font, sectorText, &textRect);
 
+        textRect.X -= textRect.Width/2;
+        textRect.Y -= textRect.Height/2;
+
+        window.DrawString(number.c_str(),-1,&font,textRect,nullptr,&blackBrush);
     }
 
-    
+
+    window.FillEllipse(&greenBrush,board.rect.outerBullseye);
+    window.FillEllipse(&redBrush,  board.rect.innerBullseye);
+
     EndPaint(h,&paint);
 }
+
+auto scoreFromPoint(BoardDimensions const &board, int x,int y)
+{
+    struct 
+    {
+        int score;
+        int multiplier;
+    } result{0,1};
+
+    auto distance = std::hypot( x, y);
+
+    if(distance > board.radius.outerDouble)
+    {
+    }
+    else if(distance < board.radius.innerBullseye)
+    {
+        result.score=50;
+    }
+    else if(distance < board.radius.outerBullseye)
+    {
+        result.score=25;
+    }
+    else
+    {
+        if(   distance < board.radius.outerTriple
+           && distance > board.radius.innerTriple)
+        {
+            result.multiplier=3;
+        }
+        else if(   distance < board.radius.outerDouble
+                && distance > board.radius.innerDouble)
+        {
+            result.multiplier=2;
+        }
+
+        result.score=2;
+
+        auto angle    = static_cast<int>(degrees(std::atan2( y , x)));
+
+        if(angle < 0)
+        {
+            angle = 360 + angle;
+        }
+
+        auto sector = (angle - Board::sector0Start) / Board::sectorWidth;
+
+        sector = (sector+20) % 20;
+
+
+        result.score = Board::sectorScore[sector];
+    }
+
+
+    return result;
+}
+
+void mouseMove(HWND h, int x, int y)
+{
+    auto board { boardDimensions(h)};
+
+    x-=board.center.X;
+    y-=board.center.Y;
+
+    auto [score, multiplier] = scoreFromPoint(board,x,y);
+
+    std::string totalScore;
+
+    if(score == 0)
+    {
+        totalScore="Miss";
+    }
+    else
+    {
+        if(multiplier == 2)
+        {
+            totalScore = "Double ";
+        }
+        else if(multiplier == 3)
+        {
+            totalScore = "Triple ";
+        }
+
+        totalScore += std::to_string(score);
+    }
+
+
+
+    SetDlgItemText(theDialog, IDC_AIMING_AT, totalScore.c_str());
+}
+
+
 
 LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
 {
@@ -291,8 +399,13 @@ LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
         InvalidateRect(h,nullptr,FALSE);
         return 0;
     
-    case WM_NCHITTEST:
     case WM_MOUSEMOVE:
+
+        mouseMove(h, GET_X_LPARAM(l), GET_Y_LPARAM(l));
+
+        return DefWindowProc(h,m,w,l);
+
+    case WM_NCHITTEST:
     case WM_NCMOUSEMOVE:
     case WM_SETCURSOR:
         break;
@@ -339,7 +452,7 @@ INT_PTR CALLBACK dialogProc(HWND h, UINT m, WPARAM w, LPARAM l)
 
 
     default:
-        print("msg {:#x}\n",m);
+//        print("msg {:#x}\n",m);
         break;
     }
 
@@ -376,7 +489,7 @@ void createWindow()
     }
 
     theWindow = CreateWindowA(Class.lpszClassName,
-                              "Palette",
+                              "Dart score",
                               windowStyle,
                               CW_USEDEFAULT,CW_USEDEFAULT,
                               800,900,
