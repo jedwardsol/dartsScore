@@ -73,6 +73,9 @@ auto    radians(double degrees)
 struct BoardPixels
 {
     Gdiplus::Point  center;
+    Gdiplus::Rect   board;
+
+
     int     outerDouble;   
     int     innerDouble;
     int     outerTriple;
@@ -95,6 +98,11 @@ auto dimensions(HWND h)
     dimensions.center.X      = clientWidth/2;
     dimensions.center.Y      = clientWidth/2;
 
+    dimensions.board.X       = dimensions.center.X - boardRadius;
+    dimensions.board.Y       = dimensions.center.Y - boardRadius;
+    dimensions.board.Width   = boardRadius*2;
+    dimensions.board.Height  = boardRadius*2;
+
     dimensions.outerDouble   = boardRadius;
     dimensions.innerDouble   = static_cast<int>(dimensions.outerDouble * ( Board::Radius::innerDouble / Board::Radius::board ));
     dimensions.outerTriple   = static_cast<int>(dimensions.outerDouble * ( Board::Radius::outerTriple / Board::Radius::board ));
@@ -108,7 +116,9 @@ auto dimensions(HWND h)
 
 void paint(HWND h,WPARAM w, LPARAM l)
 {
-    static Gdiplus::Pen blackPen{Gdiplus::Color::Black};
+    static Gdiplus::Pen         blackPen{Gdiplus::Color::Black};
+    static Gdiplus::SolidBrush  blackBrush{Gdiplus::Color::Black};
+    static Gdiplus::SolidBrush  whiteBrush{Gdiplus::Color::White};
 
 
     auto dimensions{ ::dimensions(h) };
@@ -121,14 +131,22 @@ void paint(HWND h,WPARAM w, LPARAM l)
 
     for(int i=0;i<20;i++)
     {
-        auto startAngle = radians((Board::sector0Start + i*Board::sectorWidth));
+        Gdiplus::GraphicsPath   sector;
 
-        Gdiplus::Point  end{    dimensions.center.X + static_cast<INT>(dimensions.outerDouble * std::sin(startAngle)),
-                                dimensions.center.Y + static_cast<INT>(dimensions.outerDouble * std::cos(startAngle))};
+        auto startAngle = Board::sector0Start + i*Board::sectorWidth;
 
-        board.DrawLine(&blackPen, 
-                       dimensions.center,
-                       end);
+        Gdiplus::Point  end{    dimensions.center.X + static_cast<INT>(dimensions.outerDouble * std::cos(radians(startAngle))),
+                                dimensions.center.Y + static_cast<INT>(dimensions.outerDouble * std::sin(radians(startAngle)))};
+
+//        board.DrawLine(&blackPen,dimensions.center,end);
+//        board.DrawArc(&blackPen,dimensions.board,startAngle,Board::sectorWidth);
+
+
+        sector.AddLine(dimensions.center,end);
+        sector.AddArc(dimensions.board,startAngle,Board::sectorWidth);
+
+        board.DrawPath(&blackPen, &sector);
+        board.FillPath((i % 2) ? &blackBrush : &whiteBrush, &sector);
 
     }
 
