@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dartsScore", "dartsScore.vcxproj", "{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
+		Debug|ARM64EC = Debug|ARM64EC
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
+		Release|ARM64EC = Release|ARM64EC
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|ARM.ActiveCfg = Debug|ARM
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|ARM.Build.0 = Debug|ARM
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|ARM64.Build.0 = Debug|ARM64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|ARM64EC.ActiveCfg = Debug|ARM64EC
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|ARM64EC.Build.0 = Debug|ARM64EC
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|x64.ActiveCfg = Debug|x64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|x64.Build.0 = Debug|x64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|x86.ActiveCfg = Debug|Win32
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Debug|x86.Build.0 = Debug|Win32
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|ARM.ActiveCfg = Release|ARM
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|ARM.Build.0 = Release|ARM
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|ARM64.ActiveCfg = Release|ARM64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|ARM64.Build.0 = Release|ARM64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|ARM64EC.ActiveCfg = Release|ARM64EC
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|ARM64EC.Build.0 = Release|ARM64EC
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|x64.ActiveCfg = Release|x64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|x64.Build.0 = Release|x64
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|x86.ActiveCfg = Release|Win32
+		{CCF96835-C1BA-4C7E-ADEB-D06F31F54EBA}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1D547BDB-5021-49E3-9F79-48E14907C8AB}
+	EndGlobalSection
+EndGlobal
