@@ -10,8 +10,9 @@
 #define IDC_HSL                         1004
 #define IDC_HSV                         1005
 #define IDC_AIMING_AT                   1005
-#define IDC_AIMING_AT2                  1006
 #define IDC_EXPECTED_SCORE              1006
+#define IDC_BUTTON1                     1007
+#define IDC_FINDBEST                    1007
 
 // Next default values for new objects
 // 
@@ -19,7 +20,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        103
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1008
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

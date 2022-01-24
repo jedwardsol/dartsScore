@@ -62,6 +62,7 @@ BEGIN
     LTEXT           "---",IDC_AIMING_AT,67,23,85,8
     LTEXT           "Expoected score",IDC_STATIC,7,35,54,8
     LTEXT           "0",IDC_EXPECTED_SCORE,67,36,85,8
+    PUSHBUTTON      "Find best",IDC_FINDBEST,7,78,50,14
 END
 
 

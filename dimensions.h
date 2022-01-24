@@ -56,7 +56,7 @@ constexpr  double innerBullseye {12.7/2.0};
 namespace Darts
 {
 
-constexpr int  numDarts {1000};
+constexpr int  numDarts   {500};
 
 extern std::array<Gdiplus::PointF, numDarts> darts;           // -1.0 -> 1.0
 

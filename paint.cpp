@@ -122,7 +122,15 @@ void paint(HWND h,WPARAM w, LPARAM l)
     window.Clear(Gdiplus::Color::White);
     paintBoard      (window,board);
     paintAimAndDarts(window,board);
-    
+
+
+    static Gdiplus::SolidBrush yellowBrush{Gdiplus::Color::Yellow};
+
+    if(bestPoint.x != 0)
+    {
+        window.FillEllipse(&yellowBrush,bestPoint.x-3, bestPoint.y-3,6,6);
+
+    }
 
 
 

@@ -10,6 +10,7 @@
 #include <system_error>
 #include <numbers>
 #include <tuple>
+#include <thread>
 
 #include "print.h"
 #include "window.h"
@@ -27,7 +28,7 @@ constexpr auto      windowStyle { WS_OVERLAPPEDWINDOW | WS_VISIBLE    };
 
 POINT               mousePosition{};
 int                 accuracy{};             
-
+POINT               bestPoint{};
 
 void mouseMoveAim(BoardDimensions const &board,int x, int y)     // board coordinates
 {
@@ -57,10 +58,9 @@ void mouseMoveAim(BoardDimensions const &board,int x, int y)     // board coordi
 }
 
 
-
-void mouseMoveDarts(BoardDimensions const &board,int x, int y)     // board coordinates
+auto expectedScore(BoardDimensions const &board,int x, int y)
 {
-    double totalScore{};
+    double expectedScore{};
 
     auto radius = static_cast<int>(board.radius.outerTriple * (accuracy / 100.0));
 
@@ -71,10 +71,17 @@ void mouseMoveDarts(BoardDimensions const &board,int x, int y)     // board coor
 
         auto [score, multiplier] = scoreFromPoint(board,dx,dy);
 
-        totalScore+=score*multiplier;
+        expectedScore+=score*multiplier;
     }
 
-    auto  expectedScore = totalScore / Darts::numDarts;
+    return expectedScore / Darts::numDarts;
+}
+
+
+void mouseMoveDarts(BoardDimensions const &board,int x, int y)     // board coordinates
+{
+
+    auto  expectedScore = ::expectedScore(board,x,y);
 
     auto text = std::format("{:2.1f}",expectedScore);
 
@@ -97,7 +104,41 @@ void mouseMove(HWND h, int x, int y)
 
 }
 
+void findBest()
+{
+    RECT client{};
+    GetClientRect(theWindow,&client);
 
+    auto board { boardDimensions(theWindow)};
+
+    double bestScore{};
+
+    for(int x=client.left; x<client.right;x++)
+    {
+        print("findBest {} {:2.1f}   \r",x,bestScore);
+
+        for(int y=client.top; y<client.bottom;y++)
+        {
+            int const hitx = x - board.center.X;
+            int const hity = y - board.center.Y;
+
+            double score = ::expectedScore(board,hitx,hity);
+
+            if(score > bestScore)
+            {
+                bestScore=score;
+                bestPoint = POINT{x,y};
+                PostMessage(theWindow,WM_REFRESH,0,0);
+            }
+        }
+    }
+
+
+    print("findBest done {:2.1f}    \n",bestScore);
+
+
+
+}
 
 LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
 {
@@ -128,16 +169,13 @@ LRESULT CALLBACK windowProc(HWND h, UINT m, WPARAM w, LPARAM l)
         PostMessage(theWindow,WM_REFRESH,0,0);
         break;
 
-
-
-
     case WM_NCHITTEST:
     case WM_NCMOUSEMOVE:
     case WM_SETCURSOR:
         break;
 
     default:
-        print("msg {:#x}\n",m);
+        //print("msg {:#x}\n",m);
         break;
     }
 
@@ -153,6 +191,11 @@ INT_PTR CALLBACK dialogProc(HWND h, UINT m, WPARAM w, LPARAM l)
 
         switch(LOWORD(w))
         {
+
+        case IDC_FINDBEST:
+            std::thread{findBest}.detach();
+            break;
+
         case IDCANCEL:
             PostQuitMessage(0);
             EndDialog(h,0);
@@ -161,6 +204,8 @@ INT_PTR CALLBACK dialogProc(HWND h, UINT m, WPARAM w, LPARAM l)
         break;
 
     case WM_INITDIALOG:
+        SendDlgItemMessage(h,IDC_SATURATION,TBM_SETPOS,TRUE,50);
+        accuracy= 2 + static_cast<int>(SendDlgItemMessage(h,IDC_SATURATION,TBM_GETPOS,0,0));
         ShowWindow(h,SW_SHOW);
         return false;
 

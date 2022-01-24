@@ -22,4 +22,4 @@ DartHit scoreFromPoint(BoardDimensions const &board, int x,int y);     // board 
 
 extern POINT                        mousePosition;   // client coordinates
 extern int                          accuracy;        // 2=high, 102 =low        
-
+extern POINT                        bestPoint;

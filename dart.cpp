@@ -55,7 +55,7 @@ auto genDartsLowerCircle()
 {
     static std::mt19937                                     rng{ std::random_device{}()};
     static std::uniform_real_distribution<Gdiplus::REAL>    radius{0.0,1.0};
-    static std::uniform_int                                 angle{-45, 180+45};
+    static std::uniform_int                                 angle{0, 180};
 
 
     std::array<Gdiplus::PointF, Darts::numDarts>    darts{};
@@ -67,7 +67,30 @@ auto genDartsLowerCircle()
 
         dart= {static_cast<Gdiplus::REAL>(r*cos(a)), 
                static_cast<Gdiplus::REAL>(r*sin(a))};
+    }
 
+    return darts;
+}
+
+
+auto genDartsRealistic()
+{
+    static std::mt19937                                     rng{ std::random_device{}()};
+    static std::uniform_real_distribution<Gdiplus::REAL>    radius{0.0,1.0};
+    static std::uniform_int                                 firstAngle{0, 360};
+//  static std::uniform_int                                 secondAngle{30, 180-30};
+    static std::normal_distribution<double>                 secondAngle{90, 30};
+
+
+    std::array<Gdiplus::PointF, Darts::numDarts>    darts{};
+
+    for(int i=0;i<Darts::numDarts;i++)
+    {
+        auto r = radius(rng);
+        auto a = radians( i<(Darts::numDarts/5) ? firstAngle(rng) : secondAngle(rng));
+
+        darts[i] = {static_cast<Gdiplus::REAL>(r*cos(a)), 
+                    static_cast<Gdiplus::REAL>(r*sin(a))};
     }
 
     return darts;
@@ -75,9 +98,7 @@ auto genDartsLowerCircle()
 
 
 
-
-
-std::array<Gdiplus::PointF, Darts::numDarts> Darts::darts{genDartsLowerCircle()};           // -1.0 -> 1.0
+std::array<Gdiplus::PointF, Darts::numDarts> Darts::darts{genDartsRealistic()};           // -1.0 -> 1.0
 
 
 DartHit scoreFromPoint(BoardDimensions const &board, int x,int y)
