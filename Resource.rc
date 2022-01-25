@@ -60,7 +60,7 @@ BEGIN
     LTEXT           "Accuracy",IDC_STATIC,7,47,30,8
     LTEXT           "Aiming at : ",IDC_STATIC,7,22,37,8
     LTEXT           "---",IDC_AIMING_AT,67,23,85,8
-    LTEXT           "Expoected score",IDC_STATIC,7,35,54,8
+    LTEXT           "Expected score",IDC_STATIC,7,35,50,8
     LTEXT           "0",IDC_EXPECTED_SCORE,67,36,85,8
     PUSHBUTTON      "Find best",IDC_FINDBEST,7,78,50,14
 END

@@ -53,7 +53,7 @@ constexpr  double innerBullseye {12.7/2.0};
 }
 
 
-namespace Darts
+namespace Darts          // TODO : Gdiplus leaked horribly into here.
 {
 
 constexpr int  numDarts   {500};
@@ -109,7 +109,7 @@ BoardDimensions boardDimensions(HWND h);
 
 struct RadiusDimensions // pixels
 {
-    Gdiplus::REAL   angle;
+    Gdiplus::REAL   theta;
 
     Gdiplus::Point  outerDouble;   
     Gdiplus::Point  innerDouble;

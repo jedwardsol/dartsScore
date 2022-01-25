@@ -55,20 +55,20 @@ BoardDimensions boardDimensions(HWND h)
 
 RadiusDimensions radiusDimensions(BoardDimensions  const &board, int sectorNumber)
 {
-    Gdiplus::REAL angle = 1.0f * Board::sector0Start + sectorNumber*Board::sectorWidth;
+    Gdiplus::REAL theta = 1.0f * Board::sector0Start + sectorNumber*Board::sectorWidth;
 
     auto makePoint = [&](int radius)
     {
         return Gdiplus::Point 
         {
-            board.center.X + static_cast<INT>(radius * std::cos(radians(angle))),
-            board.center.Y + static_cast<INT>(radius * std::sin(radians(angle)))
+            board.center.X + static_cast<INT>(radius * std::cos(radians(theta))),
+            board.center.Y + static_cast<INT>(radius * std::sin(radians(theta)))
         };
     };
 
     RadiusDimensions    dimensions
     {
-        angle,
+        theta,
         makePoint(board.radius.outerDouble),
         makePoint(board.radius.innerDouble),
         makePoint(board.radius.outerTriple),

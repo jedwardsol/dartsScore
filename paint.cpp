@@ -44,17 +44,17 @@ void paintBoard(Gdiplus::Graphics   &window, BoardDimensions const &board)
         Gdiplus::GraphicsPath   tripleArc;
 
         sector.AddLine(sectorStart.center  ,            sectorStart.outerDouble);
-        sector.AddArc (board.rect.outerDouble,sectorStart.angle,Board::sectorWidth);
+        sector.AddArc (board.rect.outerDouble,sectorStart.theta,Board::sectorWidth);
 
         doubleArc.AddLine(sectorStart.innerDouble, sectorStart.outerDouble);
-        doubleArc.AddArc (board.rect.outerDouble, sectorStart.angle,Board::sectorWidth);
+        doubleArc.AddArc (board.rect.outerDouble, sectorStart.theta,Board::sectorWidth);
         doubleArc.AddLine(sectorEnd.outerDouble, sectorEnd.innerDouble);
-        doubleArc.AddArc (board.rect.innerDouble, sectorEnd.angle,-Board::sectorWidth);
+        doubleArc.AddArc (board.rect.innerDouble, sectorEnd.theta,-Board::sectorWidth);
 
         tripleArc.AddLine(sectorStart.innerTriple, sectorStart.outerTriple);
-        tripleArc.AddArc (board.rect.outerTriple, sectorStart.angle,Board::sectorWidth);
+        tripleArc.AddArc (board.rect.outerTriple, sectorStart.theta,Board::sectorWidth);
         tripleArc.AddLine(sectorEnd.outerTriple, sectorEnd.innerTriple);
-        tripleArc.AddArc (board.rect.innerTriple, sectorEnd.angle,-Board::sectorWidth);
+        tripleArc.AddArc (board.rect.innerTriple, sectorEnd.theta,-Board::sectorWidth);
 
         window.FillPath((i % 2) ? &blackBrush : &whiteBrush, &sector);
         window.FillPath((i % 2) ? &redBrush   : &greenBrush, &doubleArc);
